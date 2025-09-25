@@ -167,7 +167,7 @@ const Register = () => {
             )}
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label className="form-label">Avatar URL (Optional)</label>
             <input
               type="url"
@@ -180,7 +180,7 @@ const Register = () => {
             {errors.avatar && (
               <div className="error-message">{errors.avatar}</div>
             )}
-          </div>
+          </div> */}
 
           <button
             type="submit"
