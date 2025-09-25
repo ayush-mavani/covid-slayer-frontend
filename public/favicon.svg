@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield background -->
+  <path d="M16 2L6 6v10c0 8 10 12 10 12s10-4 10-12V6L16 2z" fill="url(#shieldGrad)" stroke="#1B5E20" stroke-width="1"/>
+  
+  <!-- Cross mark -->
+  <path d="M12 14h8M16 10v8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Virus particles -->
+  <circle cx="8" cy="20" r="1.5" fill="#FF5722"/>
+  <circle cx="24" cy="20" r="1.5" fill="#FF5722"/>
+  <circle cx="16" cy="24" r="1" fill="#FF5722"/>
+</svg>
