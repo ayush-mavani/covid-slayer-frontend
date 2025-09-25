@@ -1,14 +1,20 @@
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { gamesAPI } from '../utils/api';
-import { useAuth } from './AuthContext';
-import toast from 'react-hot-toast';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
+import { gamesAPI } from "../utils/api";
+import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const GameContext = createContext();
 
 export const useGame = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useGame must be used within a GameProvider');
+    throw new Error("useGame must be used within a GameProvider");
   }
   return context;
 };
@@ -16,10 +22,9 @@ export const useGame = () => {
 export const GameProvider = ({ children }) => {
   const [currentGame, setCurrentGame] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(60);
-  const [gameStatus, setGameStatus] = useState('idle'); // idle, active, completed
+  const [gameStatus, setGameStatus] = useState("idle"); // idle, active, completed
   const [isActionInProgress, setIsActionInProgress] = useState(false);
   const timerRef = useRef(null);
-  const { registerClearGameCallback } = useAuth();
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -32,27 +37,22 @@ export const GameProvider = ({ children }) => {
   }, []);
 
   // Register resetGame function with AuthContext for logout cleanup
-  useEffect(() => {
-    if (registerClearGameCallback) {
-      registerClearGameCallback(resetGame);
-    }
-  }, [registerClearGameCallback]);
 
   const startTimer = (initialTime) => {
     // Clear any existing timer first
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    
+
     setTimeRemaining(initialTime);
-    setGameStatus('active');
-    
+    setGameStatus("active");
+
     timerRef.current = setInterval(() => {
-      setTimeRemaining(prev => {
+      setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           timerRef.current = null;
-          setGameStatus('completed');
+          setGameStatus("completed");
           return 0;
         }
         return prev - 1;
@@ -71,16 +71,16 @@ export const GameProvider = ({ children }) => {
     try {
       setIsActionInProgress(true);
       const response = await gamesAPI.createGame({ gameTime });
-      
+
       if (response.data.success) {
         const game = response.data.game;
         setCurrentGame(game);
         startTimer(game.gameTime);
-        toast.success('Game started! Good luck!');
+        toast.success("Game started! Good luck!");
         return { success: true, game };
       }
     } catch (error) {
-      const message = error.response?.data?.message || 'Failed to create game';
+      const message = error.response?.data?.message || "Failed to create game";
       toast.error(message);
       return { success: false, message };
     } finally {
@@ -89,39 +89,42 @@ export const GameProvider = ({ children }) => {
   };
 
   const performAction = async (action) => {
-    if (!currentGame || isActionInProgress || gameStatus !== 'active') {
-      return { success: false, message: 'Cannot perform action at this time' };
+    if (!currentGame || isActionInProgress || gameStatus !== "active") {
+      return { success: false, message: "Cannot perform action at this time" };
     }
 
     try {
       setIsActionInProgress(true);
       const response = await gamesAPI.performAction(currentGame.id, {
         action,
-        timeRemaining
+        timeRemaining,
       });
 
       if (response.data.success) {
         const updatedGame = response.data.game;
         setCurrentGame(updatedGame);
-        
+
         // Update game status if game ended
-        if (updatedGame.status === 'completed' || updatedGame.status === 'surrendered') {
-          setGameStatus('completed');
+        if (
+          updatedGame.status === "completed" ||
+          updatedGame.status === "surrendered"
+        ) {
+          setGameStatus("completed");
           stopTimer();
-          
-          if (updatedGame.winner === 'player') {
-            toast.success('🎉 You won! Congratulations!');
-          } else if (updatedGame.winner === 'monster') {
-            toast.error('💀 Covid Monster won! Better luck next time!');
+
+          if (updatedGame.winner === "player") {
+            toast.success("🎉 You won! Congratulations!");
+          } else if (updatedGame.winner === "monster") {
+            toast.error("💀 Covid Monster won! Better luck next time!");
           } else {
-            toast('⏰ Time\'s up! It\'s a draw!');
+            toast("⏰ Time's up! It's a draw!");
           }
         }
 
         return { success: true, game: updatedGame };
       }
     } catch (error) {
-      const message = error.response?.data?.message || 'Action failed';
+      const message = error.response?.data?.message || "Action failed";
       toast.error(message);
       return { success: false, message };
     } finally {
@@ -133,7 +136,7 @@ export const GameProvider = ({ children }) => {
     stopTimer();
     setCurrentGame(null);
     setTimeRemaining(60);
-    setGameStatus('idle');
+    setGameStatus("idle");
     setIsActionInProgress(false);
   };
 
@@ -144,7 +147,7 @@ export const GameProvider = ({ children }) => {
         return response.data.stats;
       }
     } catch (error) {
-      console.error('Failed to get game stats:', error);
+      console.error("Failed to get game stats:", error);
     }
     return null;
   };
@@ -155,11 +158,11 @@ export const GameProvider = ({ children }) => {
       if (response.data.success) {
         return {
           games: response.data.games,
-          pagination: response.data.pagination
+          pagination: response.data.pagination,
         };
       }
     } catch (error) {
-      console.error('Failed to get game history:', error);
+      console.error("Failed to get game history:", error);
     }
     return { games: [], pagination: {} };
   };
@@ -175,12 +178,8 @@ export const GameProvider = ({ children }) => {
     getGameStats,
     getGameHistory,
     startTimer,
-    stopTimer
+    stopTimer,
   };
 
-  return (
-    <GameContext.Provider value={value}>
-      {children}
-    </GameContext.Provider>
-  );
+  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 };

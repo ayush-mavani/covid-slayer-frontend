@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [clearGameCallback, setClearGameCallback] = useState(null);
 
   const checkAuthStatus = useCallback(async () => {
     try {
@@ -113,11 +112,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Clear game context if callback is available
-      if (clearGameCallback) {
-        clearGameCallback();
-      }
-      
       // Clear localStorage (cookies are cleared by backend)
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -133,10 +127,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify({ ...user, ...userData }));
   };
 
-  const registerClearGameCallback = (callback) => {
-    setClearGameCallback(() => callback);
-  };
-
   const value = {
     user,
     loading,
@@ -146,7 +136,6 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     checkAuthStatus,
-    registerClearGameCallback,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
