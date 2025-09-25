@@ -90,9 +90,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.register(userData);
       if (response.data.success) {
-        const { user: newUser } = response.data;
+        const { user: newUser, token } = response.data;
         // Store user data in localStorage (token is handled by cookies)
         localStorage.setItem("user", JSON.stringify(newUser));
+        localStorage.setItem("token", token);
         setUser(newUser);
         setIsAuthenticated(true);
         toast.success("Registration successful!");
