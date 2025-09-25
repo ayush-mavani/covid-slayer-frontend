@@ -25,6 +25,7 @@ export const GameProvider = ({ children }) => {
   const [gameStatus, setGameStatus] = useState("idle"); // idle, active, completed
   const [isActionInProgress, setIsActionInProgress] = useState(false);
   const timerRef = useRef(null);
+  const { registerClearGameCallback } = useAuth();
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -37,6 +38,11 @@ export const GameProvider = ({ children }) => {
   }, []);
 
   // Register resetGame function with AuthContext for logout cleanup
+  useEffect(() => {
+    if (registerClearGameCallback) {
+      registerClearGameCallback(resetGame);
+    }
+  }, [registerClearGameCallback]);
 
   const startTimer = (initialTime) => {
     // Clear any existing timer first
