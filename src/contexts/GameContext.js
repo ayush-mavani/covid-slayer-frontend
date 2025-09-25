@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { gamesAPI } from '../utils/api';
+import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
 const GameContext = createContext();
@@ -18,6 +19,7 @@ export const GameProvider = ({ children }) => {
   const [gameStatus, setGameStatus] = useState('idle'); // idle, active, completed
   const [isActionInProgress, setIsActionInProgress] = useState(false);
   const timerRef = useRef(null);
+  const { registerClearGameCallback } = useAuth();
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -28,6 +30,13 @@ export const GameProvider = ({ children }) => {
       }
     };
   }, []);
+
+  // Register resetGame function with AuthContext for logout cleanup
+  useEffect(() => {
+    if (registerClearGameCallback) {
+      registerClearGameCallback(resetGame);
+    }
+  }, [registerClearGameCallback]);
 
   const startTimer = (initialTime) => {
     // Clear any existing timer first
